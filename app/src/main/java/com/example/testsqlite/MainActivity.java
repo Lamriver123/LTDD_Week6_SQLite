@@ -5,14 +5,17 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -33,27 +36,47 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<NotesModel> arrayList;
     NotesAdapter adapter;
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+
 
         InitDatabaseSQLite();
         createDatabaseSQLite();
         AnhXa(); // Khởi tạo ListView và ArrayList trước
         databaseSQLite(); // Lấy dữ liệu từ database trước
 
-        Button buttonAddNote = findViewById(R.id.btnThem);
-        buttonAddNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogThem(); // Gọi hàm mở dialog thêm Notes
-            }
-        });
+
 
         // Tạo Adapter sau khi dữ liệu đã được nạp vào arrayList
         adapter = new NotesAdapter(MainActivity.this, R.layout.row_note_item, arrayList);
         listView.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.menuAddNotes){
+            DialogThem();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -125,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void AnhXa() {
         //Thêm dữ liệu vào List
-        listView = (ListView) findViewById(R.id.listView1);
+        listView = (ListView) findViewById(R.id.listView);
         arrayList = new ArrayList<>();
 
 
